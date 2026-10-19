@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Marginalia Settings</title>
+  <link rel="icon" href="../icons/icon32.png">
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="row">
+      <div class="brand"><img src="../icons/icon48.png" alt=""><span>Marginalia</span></div>
+      <span class="grow"></span>
+      <span class="saved" id="saved" aria-live="polite"></span>
+      <a class="btn-link" href="library.html" data-icon="library">Library</a>
+    </header>
+    <h1>Settings</h1>
+
+    <section class="panel">
+      <h2>Obsidian</h2>
+      <p class="lead">Sending a page creates one note per page (or appends new items to its note) and archives what was sent.</p>
+
+      <div class="methods" role="radiogroup">
+        <label class="method">
+          <input type="radio" name="method" value="uri">
+          <span>
+            <b>Obsidian URI</b> <span class="pill">no setup</span>
+            <small>Uses <code>obsidian://new</code>. Your browser asks once to allow opening Obsidian links; tick “always allow”.</small>
+          </span>
+        </label>
+        <label class="method">
+          <input type="radio" name="method" value="rest">
+          <span>
+            <b>Local REST API plugin</b> <span class="pill">silent · best for bulk</span>
+            <small>Writes straight into the vault while Obsidian is open. Needs the community plugin.</small>
+          </span>
+        </label>
+      </div>
+
+      <div class="grid">
+        <div class="field" data-method="uri">
+          <label for="vault">Vault name</label>
+          <input type="text" id="vault" spellcheck="false">
+          <small>As shown in Obsidian's vault switcher.</small>
+        </div>
+        <div class="field">
+          <label for="folder">Folder</label>
+          <input type="text" id="folder" spellcheck="false">
+          <small>Relative to the vault root; created if missing.</small>
+        </div>
+        <div class="field">
+          <label for="filename">File name</label>
+          <input type="text" id="filename" spellcheck="false">
+          <small><code>{{title}}</code> <code>{{site}}</code> <code>{{author}}</code> <code>{{date}}</code></small>
+        </div>
+        <div class="field">
+          <label for="tags">Tags</label>
+          <input type="text" id="tags" spellcheck="false">
+          <small>Comma-separated, written to the note's <code>tags</code> property.</small>
+        </div>
+      </div>
+
+      <div class="rest" data-method="rest">
+        <ol class="steps">
+          <li>In Obsidian: Settings → Community plugins → Browse → install and enable <b>Local REST API</b>.</li>
+          <li>In its settings, turn on <b>Enable Non-encrypted (HTTP) Server</b> (the HTTPS one uses a self-signed certificate browsers reject).</li>
+          <li>Copy the API key below.</li>
+        </ol>
+        <div class="grid">
+          <div class="field">
+            <label for="restUrl">Server URL</label>
+            <input type="url" id="restUrl" spellcheck="false">
+          </div>
+          <div class="field">
+            <label for="restKey">API key</label>
+            <input type="password" id="restKey" spellcheck="false" autocomplete="off">
+          </div>
+        </div>
+        <div class="row">
+          <button id="test-rest">Test connection</button>
+          <span class="small" id="rest-result"></span>
+        </div>
+      </div>
+
+      <label class="check"><input type="checkbox" id="openAfterSend"> Open the note in Obsidian after sending</label>
+
+      <details class="preview">
+        <summary>Preview of a note</summary>
+        <pre id="preview"></pre>
+      </details>
+    </section>
+
+    <section class="panel">
+      <h2>Highlighting</h2>
+      <div class="field">
+        <label>Default color</label>
+        <div class="swatches" id="colors"></div>
+      </div>
+      <label class="check"><input type="checkbox" id="selectionToolbar"> Show the highlight toolbar when I select text</label>
+      <p class="small muted">Click a highlight to recolor it, add a note or delete it. Alt+click edits highlights inside links.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Video</h2>
+      <label class="check"><input type="checkbox" id="videoButton"> Show a bookmark button when I hover a video</label>
+      <label class="check"><input type="checkbox" id="pauseOnNote"> Pause the video while I type a timestamp note</label>
+      <p class="small muted">Works on YouTube, Vimeo and any page with an HTML5 video, including embedded players.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Keyboard shortcuts</h2>
+      <table class="keys" id="keys"></table>
+      <p class="small muted" id="keys-help"></p>
+    </section>
+
+    <section class="panel">
+      <h2>Data</h2>
+      <p class="small muted" id="stats"></p>
+      <div class="row wrap-row">
+        <button id="export" data-icon="download">Export backup (JSON)</button>
+        <button id="import" data-icon="upload">Import backup</button>
+        <input type="file" id="import-file" accept="application/json,.json" hidden>
+        <span class="grow"></span>
+        <button class="danger" id="wipe" data-icon="trash">Delete everything</button>
+      </div>
+      <p class="small" id="data-result"></p>
+    </section>
+  </div>
+
+  <script src="../lib/core.js"></script>
+  <script src="../lib/obsidian.js"></script>
+  <script src="icons.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Marginalia Library</title>
+  <link rel="icon" href="../icons/icon32.png">
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="library.css">
+</head>
+<body>
+  <header class="head">
+    <div class="head-inner">
+      <div class="brand"><img src="../icons/icon48.png" alt=""><span>Marginalia</span></div>
+      <label class="search">
+        <span data-icon="search"></span>
+        <input id="q" type="search" placeholder="Search highlights, notes, titles…  ( / )" autocomplete="off">
+      </label>
+      <div class="row">
+        <button class="primary" id="send-all" data-icon="send">Send inbox to Obsidian</button>
+        <button class="ghost icon" id="settings" title="Settings" data-icon="settings"></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <nav class="toolbar">
+      <div class="tabs" role="tablist">
+        <button role="tab" data-view="inbox" data-icon="inbox">Inbox <span class="n" id="n-inbox"></span></button>
+        <button role="tab" data-view="archive" data-icon="archive">Archive <span class="n" id="n-archive"></span></button>
+      </div>
+      <div class="chips" id="chips">
+        <button data-type="all">All</button>
+        <button data-type="highlight">Highlights</button>
+        <button data-type="timestamp">Timestamps</button>
+        <button data-type="note">Notes</button>
+        <button data-type="bookmark">Bookmarks</button>
+      </div>
+    </nav>
+
+    <div class="banner" id="banner" role="status" hidden>
+      <span id="banner-text"></span>
+      <button class="ghost icon" id="banner-close" title="Dismiss" data-icon="x"></button>
+    </div>
+
+    <main id="list"></main>
+
+    <div class="empty-state" id="empty" hidden>
+      <div class="empty-icon" id="empty-icon"></div>
+      <h2 id="empty-title"></h2>
+      <p id="empty-text"></p>
+    </div>
+  </div>
+
+  <script src="../lib/core.js"></script>
+  <script src="../lib/obsidian.js"></script>
+  <script src="icons.js"></script>
+  <script src="library.js"></script>
+</body>
+</html>

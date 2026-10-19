@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Marginalia</title>
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><img src="../icons/icon32.png" alt=""><span>Marginalia</span></div>
+    <div class="row">
+      <button class="ghost icon" id="open-library" title="Open library" data-icon="library"></button>
+      <button class="ghost icon" id="open-settings" title="Settings" data-icon="settings"></button>
+    </div>
+  </header>
+
+  <section class="page">
+    <img class="favicon" id="favicon" alt="">
+    <div class="grow">
+      <div class="page-title" id="title"></div>
+      <div class="muted small" id="site"></div>
+    </div>
+  </section>
+
+  <div class="unsupported" id="unsupported" hidden>
+    Marginalia can't run on this page. Open any website, article or video to highlight and bookmark.
+  </div>
+
+  <div id="main">
+    <section class="tools">
+      <div class="grid2">
+        <button id="save-page" data-icon="bookmark">Save page</button>
+        <button id="add-note" data-icon="note">Page note</button>
+      </div>
+      <div class="note-box" id="note-box" hidden>
+        <textarea id="note-text" placeholder="A thought about this page…"></textarea>
+        <div class="row end">
+          <button class="ghost" id="note-cancel">Cancel</button>
+          <button class="primary" id="note-save">Save note</button>
+        </div>
+      </div>
+      <div class="video" id="video" hidden>
+        <div class="row">
+          <span class="time-badge" id="video-time"></span>
+          <span class="muted small grow ellipsis" id="video-title"></span>
+        </div>
+        <textarea id="video-note" rows="2" placeholder="Note for this moment (optional)"></textarea>
+        <button class="primary block" id="video-add" data-icon="bookmark">Bookmark timestamp</button>
+      </div>
+    </section>
+
+    <section class="list">
+      <div class="section-head"><span>On this page</span><span class="muted small" id="count"></span></div>
+      <ul class="items" id="items"></ul>
+      <p class="empty" id="empty">Select text on the page to highlight it, or hover a video and click the bookmark pill.</p>
+    </section>
+
+    <footer>
+      <button class="primary block" id="send" data-icon="send">Send to Obsidian</button>
+      <div class="status" id="status" role="status"></div>
+    </footer>
+  </div>
+
+  <script src="../lib/core.js"></script>
+  <script src="../lib/obsidian.js"></script>
+  <script src="icons.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

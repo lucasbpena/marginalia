@@ -1,0 +1,155 @@
+:root {
+  --bg: #f6f6f8;
+  --panel: #ffffff;
+  --panel-2: #f0f0f4;
+  --border: #e3e3ea;
+  --border-strong: #cdcdd8;
+  --text: #1c1c22;
+  --muted: #6a6a78;
+  --faint: #9898a6;
+  --accent: #6d4aff;
+  --accent-hover: #5a38ec;
+  --accent-ink: #ffffff;
+  --accent-soft: #efeaff;
+  --danger: #d6334a;
+  --danger-soft: #fdecef;
+  --ok: #17864a;
+  --ok-soft: #e5f6ec;
+  --shadow: 0 1px 2px rgba(20, 20, 30, 0.05), 0 6px 20px rgba(20, 20, 30, 0.05);
+  --radius: 12px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #141418;
+    --panel: #1d1d23;
+    --panel-2: #26262e;
+    --border: #2f2f39;
+    --border-strong: #41414d;
+    --text: #ececf1;
+    --muted: #a0a0ae;
+    --faint: #74747f;
+    --accent: #8f72ff;
+    --accent-hover: #a28aff;
+    --accent-ink: #15121f;
+    --accent-soft: #2a2442;
+    --danger: #ff6b81;
+    --danger-soft: #3a1d24;
+    --ok: #4ad388;
+    --ok-soft: #173326;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; }
+
+[hidden] { display: none !important; }
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  border-radius: 8px;
+  padding: 6px 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+button:hover { background: var(--panel-2); border-color: var(--border-strong); }
+button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+button.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+button.ghost { background: transparent; border-color: transparent; color: var(--muted); }
+button.ghost:hover { background: var(--panel-2); color: var(--text); }
+button.icon { padding: 6px; }
+button.danger:hover { color: var(--danger); background: var(--danger-soft); border-color: transparent; }
+button:disabled { opacity: 0.5; cursor: default; pointer-events: none; }
+button svg { width: 16px; height: 16px; flex: none; }
+button.block { width: 100%; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+input[type="text"], input[type="search"], input[type="url"], input[type="password"], textarea {
+  font: inherit;
+  color: inherit;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 10px;
+  width: 100%;
+}
+textarea { resize: vertical; min-height: 64px; line-height: 1.45; }
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.muted { color: var(--muted); }
+.small { font-size: 12px; }
+.row { display: flex; align-items: center; gap: 8px; }
+.row.end { justify-content: flex-end; }
+.grow { flex: 1; min-width: 0; }
+
+.brand { display: flex; align-items: center; gap: 8px; font-weight: 700; letter-spacing: -0.01em; }
+.brand img { width: 22px; height: 22px; }
+
+.favicon { width: 16px; height: 16px; border-radius: 3px; flex: none; }
+
+.dot { width: 10px; height: 10px; border-radius: 50%; flex: none; display: inline-block; }
+
+.time-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font: 600 12px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 4px 7px;
+  border-radius: 6px;
+  text-decoration: none;
+  flex: none;
+}
+a.time-badge:hover { background: var(--accent); color: var(--accent-ink); }
+.time-badge svg { width: 11px; height: 11px; }
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+.tag svg { width: 11px; height: 11px; }
+
+.swatches { display: flex; gap: 8px; }
+.swatches button {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+}
+.swatches button.on { border-color: var(--text); }

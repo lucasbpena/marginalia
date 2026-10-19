@@ -1,0 +1,64 @@
+{
+  "manifest_version": 3,
+  "name": "Marginalia",
+  "version": "0.1.0",
+  "description": "Highlight and annotate web pages, bookmark video timestamps, and send everything to Obsidian.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "pages/popup.html",
+    "default_title": "Marginalia",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js",
+    "scripts": ["lib/core.js", "background.js"]
+  },
+  "options_ui": {
+    "page": "pages/options.html",
+    "open_in_tab": true
+  },
+  "permissions": ["storage", "unlimitedStorage", "contextMenus", "scripting", "clipboardWrite"],
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "all_frames": true,
+      "run_at": "document_idle",
+      "js": ["lib/core.js", "content/anchoring.js", "content/ui.js", "content/video.js", "content/content.js"],
+      "css": ["content/content.css"]
+    }
+  ],
+  "commands": {
+    "_execute_action": {
+      "suggested_key": { "default": "Alt+Shift+M" },
+      "description": "Open the Marginalia popup"
+    },
+    "highlight-selection": {
+      "suggested_key": { "default": "Alt+Shift+H" },
+      "description": "Highlight the selected text"
+    },
+    "highlight-note": {
+      "suggested_key": { "default": "Alt+Shift+E" },
+      "description": "Highlight the selected text and add a note"
+    },
+    "bookmark-video": {
+      "suggested_key": { "default": "Alt+Shift+Y" },
+      "description": "Bookmark the current video timestamp"
+    }
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "marginalia@local",
+      "strict_min_version": "121.0",
+      "data_collection_permissions": { "required": ["none"] }
+    }
+  }
+}
