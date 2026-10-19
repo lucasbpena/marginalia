@@ -103,10 +103,59 @@
     </section>
 
     <section class="panel">
-      <h2>Video</h2>
+      <h2>Video bookmark button</h2>
       <label class="check"><input type="checkbox" id="videoButton"> Show a bookmark button when I hover a video</label>
+      <div class="grid">
+        <div class="field">
+          <label for="pillSize">Size <span class="val" id="pillSize-val"></span></label>
+          <input type="range" id="pillSize" min="0.75" max="2" step="0.25">
+        </div>
+        <div class="field">
+          <label>Corner</label>
+          <div class="seg" id="pillPosition" role="radiogroup">
+            <button data-value="top-left">Top left</button>
+            <button data-value="top-right">Top right</button>
+          </div>
+        </div>
+      </div>
       <label class="check"><input type="checkbox" id="pauseOnNote"> Pause the video while I type a timestamp note</label>
       <p class="small muted">Works on YouTube, Vimeo and any page with an HTML5 video, including embedded players.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Timeline markers</h2>
+      <p class="lead">Saved timestamps show on YouTube's progress bar, and on other players as a strip along the bottom when you hover them. Click a marker to jump there.</p>
+
+      <div class="player" id="player">
+        <button class="pv-pill" id="pv-pill" tabindex="-1" data-icon="bookmark"><span>0:42</span></button>
+        <div class="pv-bar"><div class="pv-played"></div><div class="pv-marks" id="pv-marks"></div></div>
+        <div class="pv-tip" id="pv-tip" hidden><b></b><span></span></div>
+      </div>
+
+      <label class="check"><input type="checkbox" id="markers"> Show markers on video timelines</label>
+      <div class="field">
+        <label>Color</label>
+        <div class="swatches" id="marker-colors">
+          <input type="color" id="markerColor" title="Custom color">
+        </div>
+      </div>
+      <div class="grid">
+        <div class="field">
+          <label>Shape</label>
+          <div class="seg" id="markerShape" role="radiogroup"></div>
+        </div>
+        <div class="field">
+          <label for="markerSize">Size <span class="val" id="markerSize-val"></span></label>
+          <input type="range" id="markerSize" min="0.5" max="3" step="0.25">
+        </div>
+        <div class="field">
+          <label for="markerOpacity">Opacity <span class="val" id="markerOpacity-val"></span></label>
+          <input type="range" id="markerOpacity" min="0.3" max="1" step="0.05">
+        </div>
+      </div>
+      <label class="check"><input type="checkbox" id="markerOutline"> Dark outline (easier to see on bright videos)</label>
+      <label class="check"><input type="checkbox" id="markerLabels"> Show the time and note in a bubble when hovering a marker</label>
+      <div><button class="ghost" id="reset-markers">Reset marker settings</button></div>
     </section>
 
     <section class="panel">

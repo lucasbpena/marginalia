@@ -16,6 +16,7 @@ A personal Readwise-style browser extension: highlight and annotate web pages, b
 | Highlight + note | The ✎ Note button in the toolbar, or `Alt+Shift+E` |
 | Edit/recolor/delete | Click a highlight (Alt+click when it's inside a link) |
 | Video timestamp | Hover the video and click the 🔖 pill, or press `Alt+Shift+Y`, or use the popup |
+| Jump to a saved moment | Yellow markers on YouTube's progress bar; on other players hover the video for a marker strip along its bottom edge. Click a marker to seek. Color, shape, size, opacity, outline and hover labels are in Settings → *Timeline markers*; the bookmark button's size and corner in Settings → *Video bookmark button*. |
 | Page note / save page | Popup (`Alt+Shift+M`) |
 | Library (Inbox/Archive) | Popup → library icon, or right-click the toolbar icon → *Open library* |
 

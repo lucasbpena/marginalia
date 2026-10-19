@@ -3,13 +3,18 @@
 (() => {
   const RW = globalThis.RW;
   if (RW.video) return;
-  const { api, util, ui } = RW;
+  const { api, util, ui, store } = RW;
   const isTop = window === window.top;
 
   let settings = RW.DEFAULTS;
   RW.getSettings().then((s) => (settings = s));
   api.storage.onChanged.addListener((ch, area) => {
-    if (area === 'local' && ch.settings) settings = { ...RW.DEFAULTS, ...ch.settings.newValue };
+    if (area !== 'local') return;
+    if (ch.settings) {
+      settings = { ...RW.DEFAULTS, ...ch.settings.newValue };
+      if (marks !== null) { syncMarks(); refreshPill(); } // restyle live
+    }
+    if (marks !== null && Object.keys(ch).some((k) => k.startsWith('src:'))) loadMarks();
   });
 
   function videos() {
@@ -85,19 +90,28 @@
 
   function refreshPill() {
     if (!hovered) return;
-    const r = hovered.getBoundingClientRect();
-    ui.showPill(r, util.formatTime(hovered.currentTime), () => bookmark({ video: hovered, prompt: true }));
+    const v = hovered;
+    const r = v.getBoundingClientRect();
+    if (settings.videoButton) {
+      ui.showPill(r, util.formatTime(v.currentTime), () => bookmark({ video: v, prompt: true }),
+        { scale: settings.pillSize, position: settings.pillPosition });
+    } else ui.hidePill();
+    // YouTube gets markers on its own progress bar (syncMarks); other players get a strip.
+    if (settings.markers && marks?.length && hasDuration(v) && !youtubePlayer(v)) {
+      ui.showMarks(r, marks, v.duration, (t) => { v.currentTime = t; }, settings);
+    } else ui.hideMarks();
   }
 
   function hidePill() {
     hovered = null;
     clearInterval(tick);
     ui.hidePill();
+    ui.hideMarks();
   }
 
   function onPointer() {
     raf = 0;
-    if (!settings.videoButton || !lastPoint) return;
+    if (!lastPoint) return;
     const { x, y } = lastPoint;
     const v = videos().find((v) => {
       const r = v.getBoundingClientRect();
@@ -118,6 +132,83 @@
     lastPoint = { x: e.clientX, y: e.clientY };
     raf ||= requestAnimationFrame(onPointer);
   }, { passive: true, capture: true });
+
+  // ---------- timeline markers for saved timestamps ----------
+  // Native controls live in the browser's own shadow DOM, out of reach, so only YouTube's
+  // progress bar gets real markers; every other player gets the hover strip from refreshPill.
+
+  let marks = null; // saved timestamps of this frame's video; null until a video shows up
+  let marksKey = '', loading = false, ytBox = null;
+
+  const hasDuration = (v) => Number.isFinite(v.duration) && v.duration > 0;
+  const youtubePlayer = (v) => v.closest('.html5-video-player');
+
+  // Every timestamp saved for this video, whichever page it was bookmarked from.
+  async function loadMarks() {
+    const key = util.canonicalVideoUrl(location.href);
+    if (key !== marksKey) { ytBox?.remove(); ytBox = null; }
+    marksKey = key;
+    loading = true;
+    try {
+      const found = [];
+      for (const src of await store.all()) {
+        for (const i of src.items) {
+          if (i.type === 'timestamp' && util.canonicalVideoUrl(i.videoUrl || src.url) === key) {
+            found.push({ time: i.time, note: i.note || '' });
+          }
+        }
+      }
+      if (key !== marksKey) return;
+      marks = found.sort((a, b) => a.time - b.time);
+    } finally {
+      loading = false;
+    }
+    syncMarks();
+  }
+
+  function markEl(m, v) {
+    const el = document.createElement('rw-mark');
+    el.style.left = `${Math.min(100, (m.time / v.duration) * 100)}%`;
+    RW.styleMarker(el, settings);
+    // Below the bar: YouTube shows its own preview thumbnail above it.
+    ui.labelMarker(el, m, settings, 'below');
+    // Jump exactly to the mark instead of letting the player scrub to the click position.
+    for (const t of ['pointerdown', 'mousedown', 'touchstart']) {
+      el.addEventListener(t, (e) => { e.preventDefault(); e.stopPropagation(); });
+    }
+    el.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); v.currentTime = m.time; });
+    return el;
+  }
+
+  function syncMarks() {
+    const v = primaryVideo();
+    const player = v && youtubePlayer(v);
+    // During ads the video element plays the ad, so its duration would misplace the marks.
+    const bar = settings.markers && player && !player.classList.contains('ad-showing') && marks?.length && hasDuration(v)
+      ? player.querySelector('.ytp-progress-bar')
+      : null;
+    if (!bar) {
+      if (ytBox) { ytBox.remove(); ytBox = null; ui.hideTip(); }
+      return;
+    }
+    const sig = RW.markerSignature(settings, marks, v.duration);
+    if (ytBox?.parentNode === bar && ytBox.sig === sig) return;
+    ytBox?.remove();
+    ui.hideTip();
+    ytBox = document.createElement('rw-marks');
+    ytBox.sig = sig;
+    ytBox.append(...marks.map((m) => markEl(m, v)));
+    bar.append(ytBox);
+  }
+
+  // Cheap poll: catches videos that appear late, SPA navigation and players rebuilding their bar.
+  function pollMarks() {
+    if (!document.getElementsByTagName('video').length || loading) return;
+    if (marks === null || util.canonicalVideoUrl(location.href) !== marksKey) loadMarks();
+    else syncMarks();
+  }
+  pollMarks();
+  setInterval(pollMarks, 1000);
 
   // ---------- #t=N seeking for players that don't support it themselves ----------
 

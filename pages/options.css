@@ -80,3 +80,83 @@ kbd {
 @media (max-width: 640px) {
   .methods, .grid { grid-template-columns: 1fr; }
 }
+
+/* ---------- video / marker settings ---------- */
+.val { font-weight: 500; color: var(--muted); font-variant-numeric: tabular-nums; margin-left: 4px; }
+input[type="range"] { width: 100%; accent-color: var(--accent); }
+
+.seg { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; border-radius: 10px; background: var(--panel-2); justify-self: start; }
+.seg button { border: 0; background: transparent; color: var(--muted); padding: 5px 11px; border-radius: 8px; font-size: 13px; }
+.seg button:hover { background: transparent; color: var(--text); }
+.seg button.on { background: var(--panel); color: var(--text); font-weight: 600; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); }
+.seg .shape { position: relative; display: inline-block; width: 18px; height: 18px; }
+.seg .shape i { position: absolute; left: 50%; top: 50%; translate: -50% -50%; }
+
+#marker-colors { flex-wrap: wrap; align-items: center; }
+#markerColor {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background: conic-gradient(#ff5c5c, #ffd43b, #69db7c, #74c0fc, #b197fc, #f783ac, #ff5c5c);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+#markerColor::-webkit-color-swatch-wrapper { padding: 3px; }
+#markerColor::-webkit-color-swatch { border: 0; border-radius: 50%; }
+#markerColor::-moz-color-swatch { border: 0; border-radius: 50%; }
+#markerColor.on { border-color: var(--text); }
+
+/* Mock player for the live preview */
+.player {
+  position: relative;
+  aspect-ratio: 3 / 1;
+  border-radius: 10px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, transparent 55%, rgba(0, 0, 0, 0.65)),
+    radial-gradient(circle at 28% 35%, #4b6cb7 0, transparent 45%),
+    radial-gradient(circle at 75% 60%, #b06ab3 0, transparent 50%),
+    #1b1d2a;
+}
+.pv-pill {
+  --s: 1;
+  position: absolute;
+  top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: calc(6px * var(--s));
+  padding: calc(6px * var(--s)) calc(10px * var(--s));
+  border-radius: 999px;
+  background: rgba(20, 20, 24, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font: 600 calc(12px * var(--s)) / 1 ui-sans-serif, system-ui, sans-serif;
+  pointer-events: none;
+}
+.pv-pill svg { width: calc(14px * var(--s)); height: calc(14px * var(--s)); fill: currentColor; stroke: none; }
+.pv-pill.left { left: 12px; }
+.pv-pill.right { right: 12px; }
+.pv-bar { position: absolute; left: 16px; right: 16px; bottom: 22px; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, 0.3); }
+.pv-played { position: absolute; inset: 0 auto 0 0; width: 46%; border-radius: 2px; background: #ff0033; }
+.pv-marks { position: absolute; inset: 0; }
+.pv-marks i { position: absolute; top: 50%; translate: -50% -50%; cursor: pointer; transition: scale 0.1s, filter 0.1s; }
+.pv-marks i:hover { scale: 1.35; filter: brightness(1.2); }
+.player.off .pv-marks { display: none; }
+.pv-tip {
+  position: absolute;
+  bottom: 40px;
+  translate: -50% 0;
+  max-width: 240px;
+  padding: 5px 9px;
+  border-radius: 7px;
+  background: #1f1f24;
+  border: 1px solid #34343c;
+  color: #ececf1;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.pv-tip b { margin-right: 6px; font-variant-numeric: tabular-nums; }

@@ -37,13 +37,24 @@
     textarea:focus, input:focus { border-color: #8b6cff; box-shadow: 0 0 0 3px rgba(139,108,255,.25); }
     .hint { margin-top: 6px; font-size: 11px; color: #9a9aa8; display: flex; justify-content: space-between; gap: 8px; }
     .title { font-weight: 600; font-size: 13px; color: #fff; }
-    .pill { all: unset; display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px;
-      background: rgba(20,20,24,.82); border: 1px solid rgba(255,255,255,.18); color: #fff; font: 600 12px/1 ui-sans-serif, system-ui, sans-serif;
+    .pill { all: unset; display: inline-flex; align-items: center; gap: calc(6px * var(--s, 1));
+      padding: calc(6px * var(--s, 1)) calc(10px * var(--s, 1)); border-radius: 999px;
+      background: rgba(20,20,24,.82); border: 1px solid rgba(255,255,255,.18); color: #fff;
+      font: 600 calc(12px * var(--s, 1))/1 ui-sans-serif, system-ui, sans-serif;
       cursor: pointer; backdrop-filter: blur(6px); box-shadow: 0 4px 14px rgba(0,0,0,.35); }
     .pill:hover { background: rgba(124,92,255,.92); border-color: transparent; }
-    .pill svg { width: 14px; height: 14px; }
+    .pill svg { width: calc(14px * var(--s, 1)); height: calc(14px * var(--s, 1)); }
     .toast { padding: 9px 13px; font-size: 13px; animation: pop .15s ease-out; display: flex; gap: 8px; align-items: center; }
     .toast b { color: #b9a6ff; font-weight: 600; }
+    .strip { position: relative; }
+    .strip::before { content: ""; position: absolute; left: 0; right: 0; top: calc(50% - 1px); height: 2px; border-radius: 1px;
+      background: rgba(255,255,255,.45); box-shadow: 0 0 3px rgba(0,0,0,.6); }
+    .mark { all: unset; position: absolute; top: 50%; translate: -50% -50%; cursor: pointer; pointer-events: auto;
+      transition: scale .1s, filter .1s; }
+    .mark:hover { scale: 1.35; filter: brightness(1.2); }
+    .tip { padding: 5px 9px; font-size: 12px; line-height: 1.35; max-width: 280px; white-space: pre-wrap; overflow-wrap: anywhere;
+      background: #1f1f24; border: 1px solid #34343c; border-radius: 7px; box-shadow: 0 6px 18px rgba(0,0,0,.4); }
+    .tip b { font-variant-numeric: tabular-nums; margin-right: 6px; }
   `;
 
   const ICONS = {
@@ -234,7 +245,7 @@
   // ---------- video pill ----------
 
   let pill = null;
-  function showPill(rect, label, onClick) {
+  function showPill(rect, label, onClick, { scale = 1, position = 'top-left' } = {}) {
     if (!pill) {
       const node = el(`<button class="pill" tabindex="-1" title="Bookmark this moment (Alt+Shift+Y)">${ICONS.bookmark}<span></span></button>`);
       // Never take focus: a focused button would re-fire on the Space/Enter typed into the note.
@@ -243,11 +254,74 @@
       pill = layer(node);
     }
     pill.onClick = onClick;
+    pill.firstElementChild.style.setProperty('--s', String(scale));
     pill.querySelector('span').textContent = label;
     pill.style.top = `${Math.max(4, rect.top + 12)}px`;
-    pill.style.left = `${Math.max(4, rect.left + 12)}px`;
+    const left = position === 'top-right' ? rect.right - 12 - pill.offsetWidth : rect.left + 12;
+    pill.style.left = `${Math.max(4, left)}px`;
   }
   function hidePill() { pill?.remove(); pill = null; }
+
+  // ---------- marker hover label ----------
+
+  let tipEl = null;
+  function showTip(rect, time, note, prefer = 'above') {
+    hideTip();
+    const node = el('<div class="tip"><b></b><span></span></div>');
+    node.querySelector('b').textContent = time;
+    node.querySelector('span').textContent = note || '';
+    tipEl = layer(node);
+    tipEl.style.pointerEvents = 'none';
+    place(tipEl, rect, { prefer });
+  }
+  function hideTip() { tipEl?.remove(); tipEl = null; }
+
+  // Styled bubble on hover, or the native tooltip when bubbles are turned off.
+  function labelMarker(el, m, s, prefer) {
+    const time = RW.util.formatTime(m.time);
+    if (!s.markerLabels) {
+      el.title = time + (m.note ? ` · ${m.note}` : '');
+      return;
+    }
+    el.addEventListener('mouseenter', () => showTip(el.getBoundingClientRect(), time, m.note, prefer));
+    el.addEventListener('mouseleave', hideTip);
+  }
+
+  // ---------- saved-timestamp strip along the bottom of a video ----------
+
+  let strip = null;
+  function showMarks(rect, marks, duration, onSeek, s) {
+    const sig = RW.markerSignature(s, marks, duration);
+    if (strip?.sig !== sig) {
+      hideMarks();
+      const node = el('<div class="strip"></div>');
+      for (const m of marks) {
+        const b = document.createElement('button');
+        b.className = 'mark';
+        b.tabIndex = -1;
+        b.style.left = `${Math.min(100, (m.time / duration) * 100)}%`;
+        RW.styleMarker(b, s);
+        labelMarker(b, m, s, 'above');
+        b.addEventListener('mousedown', (e) => e.preventDefault());
+        b.addEventListener('click', (e) => { e.preventDefault(); strip?.onSeek(m.time); });
+        node.append(b);
+      }
+      // Tall enough for the biggest marker, rotated or scaled up on hover.
+      const look = RW.markerStyle(s);
+      const height = Math.max(12, Math.max(parseFloat(look.width), parseFloat(look.height)) * 1.45);
+      node.style.height = `${height}px`;
+      strip = layer(node);
+      strip.sig = sig;
+      strip.h = height;
+      strip.style.pointerEvents = 'none'; // only the marks take clicks, the player stays usable
+    }
+    strip.onSeek = onSeek;
+    strip.style.left = `${rect.left + 12}px`;
+    strip.style.width = `${Math.max(0, rect.width - 24)}px`;
+    // Centered ~11px above the bottom edge, just under the browser's own timeline.
+    strip.style.top = `${Math.min(rect.bottom, window.innerHeight) - 11 - strip.h / 2}px`;
+  }
+  function hideMarks() { strip?.remove(); strip = null; hideTip(); }
 
   // ---------- toast ----------
 
@@ -265,7 +339,7 @@
 
   RW.ui = {
     isOurs, showToolbar, hideToolbar, showPopover, hidePopover, closePopover, prompt,
-    showPill, hidePill, toast,
+    showPill, hidePill, showMarks, hideMarks, labelMarker, hideTip, toast,
     get toolbarOpen() { return !!bar; },
     get popoverOpen() { return !!pop; },
   };
